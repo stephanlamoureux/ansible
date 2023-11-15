@@ -1,0 +1,16 @@
+---
+- name: Copy for amazon linux
+  hosts: amazon
+  tasks:
+   - name: Copy your file to the webservers
+     copy:
+       src: /home/ubuntu/testfile1.txt
+       dest: /home/ec2-user/testfile1.txt
+
+- name: Copy for ubuntu
+  hosts: ubuntu
+  tasks:
+   - name: Copy your file to the ubuntuservers
+     copy:
+       src: /home/ubuntu/testfile1.txt
+       dest: /home/ubuntu/testfile1.txt

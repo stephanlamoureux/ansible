@@ -1,0 +1,18 @@
+---
+- name: Copy hello-devops.html file to Amazon Linux
+  hosts: amazon
+  become: yes
+  tasks:
+   - name: Copy file
+     copy:
+        src: ../hello-devops.html
+        dest: /home/ec2-user
+
+- name: Copy hello-devops.html file to Ubuntu
+  hosts: amazon
+  become: yes
+  tasks:
+    - name: Copy file
+      copy:
+        src: ../hello-devops.html
+        dest: /home/ubuntu

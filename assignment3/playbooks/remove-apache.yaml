@@ -1,0 +1,22 @@
+---
+- name: Remove Apache from Amazon Linux
+  hosts: amazon
+  become: yes
+  tasks:
+   - name: Remove Apache
+     dnf:
+       name: httpd
+       state: absent
+
+- name: Remove Apache from Ubuntu
+  hosts: ubuntu
+  become: yes
+  tasks:
+   - name: Remove Apache
+     apt:
+       name: apache2
+       state: absent
+   - name: Remove unwanted Apache2 packages from the system
+     apt:
+       autoremove: yes
+       purge: yes

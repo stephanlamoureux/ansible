@@ -1,0 +1,9 @@
+---
+- name: Create a user named 'guest' on both servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create a guest user
+      user:
+        name: guest
+        state: present
