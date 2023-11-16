@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# adhoc ansible commands
+
 # list all the hosts
 ansible-inventory --graph -i inventory
 
