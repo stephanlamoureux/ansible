@@ -1,0 +1,75 @@
+---
+- name: Twoge Setup
+  hosts: ubuntu
+  become: yes
+  tasks:
+    - name: Update apt repositories
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: 'dist'
+
+    - name: Install packages
+      apt:
+        name:
+          - python3-pip
+          - python3-venv
+        state: latest
+
+    - name: Clone Git repository
+      git:
+        repo: "https://github.com/chandradeoarya/twoge"
+        dest: "/home/ubuntu/twoge"
+        clone: yes
+        update: yes
+
+    - name: Create Python virtual environment
+      ansible.builtin.command:
+        cmd: python3 -m venv /home/ubuntu/twoge/venv
+        creates: /home/ubuntu/twoge/venv
+
+    - name: Install requirements
+      ansible.builtin.pip:
+        requirements: /home/ubuntu/twoge/requirements.txt
+        virtualenv: /home/ubuntu/twoge/venv
+        virtualenv_command: python3 -m venv
+
+    - name: Create .env file in twoge directory
+      copy:
+        dest: "/home/ubuntu/twoge/.env"
+        content: |
+          SQLALCHEMY_DATABASE_URI = "postgresql://username:password@endpoint/database"
+        mode: '0644'
+
+    - name: Create systemd service file for twoge
+      copy:
+        dest: "/etc/systemd/system/twoge.service"
+        content: |
+          [Unit]
+          Description=Gunicorn instance to serve twoge
+          Wants=network.target
+          After=syslog.target network-online.target
+
+          [Service]
+          Type=simple
+          WorkingDirectory=/home/ubuntu/twoge
+          Environment="PATH=/home/ubuntu/twoge/venv/bin"
+          ExecStart=/home/ubuntu/twoge/venv/bin/gunicorn app:app -c /home/ubuntu/twoge/gunicorn_config.py
+          Restart=always
+          RestartSec=10
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd to read new twoge service
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start twoge service
+      systemd:
+        name: twoge
+        enabled: yes
+        state: started

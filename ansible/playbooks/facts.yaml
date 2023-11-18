@@ -1,3 +1,4 @@
+---
 - name: show facts
   hosts: all
   tasks:
