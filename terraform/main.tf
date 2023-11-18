@@ -1,8 +1,8 @@
-resource "aws_instance" "my_instance" {
+resource "aws_instance" "main_node" {
   ami             = "ami-06dd92ecc74fdfb36"
   instance_type   = "t2.micro"
   key_name        = "stephan"
-  count           = 2
+  count           = 1
   security_groups = [aws_security_group.my_security_group.name]
 
   user_data = <<-EOF
@@ -13,11 +13,30 @@ resource "aws_instance" "my_instance" {
               EOF
 
   tags = {
-    Name = "Ubuntu"
+    Name = "Ubuntu - Main Node"
   }
 }
 
-resource "aws_instance" "my_instance_amazon" {
+resource "aws_instance" "ubuntu_node1" {
+  ami             = "ami-06dd92ecc74fdfb36"
+  instance_type   = "t2.micro"
+  key_name        = "stephan"
+  count           = 1
+  security_groups = [aws_security_group.my_security_group.name]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update -y
+              sudo apt upgrade -y
+              sudo apt install ansible -y
+              EOF
+
+  tags = {
+    Name = "Ubuntu - Node 1"
+  }
+}
+
+resource "aws_instance" "amazon_node1" {
   ami             = "ami-0669b163befffbdfc"
   instance_type   = "t2.micro"
   key_name        = "stephan"
@@ -31,7 +50,7 @@ resource "aws_instance" "my_instance_amazon" {
               EOF
 
   tags = {
-    Name = "Amazon Linux 3"
+    Name = "Amazon Linux 3 - Node 1"
   }
 }
 
@@ -64,6 +83,22 @@ resource "aws_security_group" "my_security_group" {
     description = "https"
   }
 
+  ingress {
+    from_port   = 9876
+    to_port     = 9876
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "gunicorn"
+  }
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "postgres"
+  }
+
   # Fully public outbound rules.
   egress {
     from_port   = 0
@@ -74,6 +109,6 @@ resource "aws_security_group" "my_security_group" {
   }
 
   tags = {
-    Name = "Ansible1SecurityGroup"
+    Name = "AnsibleSecurityGroup"
   }
 }

@@ -26,12 +26,12 @@
         update: yes
 
     - name: Create Python virtual environment
-      ansible.builtin.command:
+      command:
         cmd: python3 -m venv /home/ubuntu/twoge/venv
         creates: /home/ubuntu/twoge/venv
 
     - name: Install requirements
-      ansible.builtin.pip:
+      pip:
         requirements: /home/ubuntu/twoge/requirements.txt
         virtualenv: /home/ubuntu/twoge/venv
         virtualenv_command: python3 -m venv
@@ -40,7 +40,7 @@
       copy:
         dest: "/home/ubuntu/twoge/.env"
         content: |
-          SQLALCHEMY_DATABASE_URI = "postgresql://username:password@endpoint/database"
+          SQLALCHEMY_DATABASE_URI = "postgresql://cpadmin:password@host/stephan-twoge"
         mode: '0644'
 
     - name: Create systemd service file for twoge
