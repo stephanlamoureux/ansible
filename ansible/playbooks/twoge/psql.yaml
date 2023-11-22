@@ -1,0 +1,70 @@
+---
+- name: PostgreSQL Setup
+  hosts: ubuntu
+  become: yes
+  tasks:
+
+    - name: Install psycopg2
+      pip:
+        name: psycopg2-binary
+        executable: /usr/bin/pip3
+
+    - name: Install PostgreSQL
+      apt:
+        name:
+          - postgresql
+          - postgresql-contrib
+          - acl
+        state: present
+
+    - name: Ensure PostgreSQL is running
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Change the Postgres network binding
+      lineinfile:
+        path: "/etc/postgresql/14/main/postgresql.conf"
+        regexp: '# listen_addresses'
+        line: "listen_addresses = '*'"
+
+    - name: Allow trust authentication for the postgres user
+      lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        line: "local all postgres trust"
+        state: present
+      notify:
+        - restart postgresql
+
+    - name: Set password for the postgres user
+      become: yes
+      become_user: postgres
+      postgresql_user:
+        name: postgres
+        password: postgres
+
+    - name: Create a PostgreSQL user
+      become_user: postgres
+      postgresql_user:
+        name: twoge
+
+    - name: Create a PostgreSQL database
+      become_user: postgres
+      postgresql_db:
+        name: twogedb
+        owner: twoge
+
+    - name: Create .env file in twoge directory
+      copy:
+        dest: "/home/ubuntu/twoge/.env"
+        content: |
+          SQLALCHEMY_DATABASE_URI = "postgresql://user:pass:@hostname/database"
+        mode: '0644'
+
+  handlers:
+    - name: restart postgresql
+      become: yes
+      service:
+        name: postgresql
+        state: restarted

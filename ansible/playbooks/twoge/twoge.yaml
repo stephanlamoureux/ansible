@@ -36,13 +36,6 @@
         virtualenv: /home/ubuntu/twoge/venv
         virtualenv_command: python3 -m venv
 
-    - name: Create .env file in twoge directory
-      copy:
-        dest: "/home/ubuntu/twoge/.env"
-        content: |
-          SQLALCHEMY_DATABASE_URI = "postgresql://cpadmin:password@host/stephan-twoge"
-        mode: '0644'
-
     - name: Create systemd service file for twoge
       copy:
         dest: "/etc/systemd/system/twoge.service"
@@ -73,3 +66,4 @@
         name: twoge
         enabled: yes
         state: started
+
