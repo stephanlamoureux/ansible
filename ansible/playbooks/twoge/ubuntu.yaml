@@ -1,0 +1,12 @@
+---
+- name: OS Setup
+  hosts: ubuntu
+  become: yes
+  tasks:
+    - name: Update apt repositories
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: 'dist'

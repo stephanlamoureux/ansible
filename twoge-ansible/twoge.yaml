@@ -1,0 +1,7 @@
+---
+- hosts: ubuntu
+  become: yes
+  roles:
+    - ubuntu_setup
+    - postgresql_setup
+    - twoge_setup

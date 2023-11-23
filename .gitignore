@@ -4,3 +4,4 @@
 terraform.tfstate
 terraform.tfstate.backup
 stephan.pem
+twoge-ansible/roles/postgresql_setup/vars/
