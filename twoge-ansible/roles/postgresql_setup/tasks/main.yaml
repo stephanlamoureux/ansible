@@ -51,6 +51,5 @@
   copy:
     dest: "/home/ubuntu/twoge/.env"
     content: |
-      SQLALCHEMY_DATABASE_URI = "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ twoge_db_hostname }}/{{ twoge_db_name }}
-      "
+      SQLALCHEMY_DATABASE_URI = "{{ database_url }}"
     mode: '0644'
