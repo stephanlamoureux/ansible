@@ -1,6 +1,8 @@
 ---
 - hosts: ubuntu
   become: yes
+  vars_files:
+    - ./secret_vars.yml
   roles:
     - ubuntu_setup
     - postgresql_setup
